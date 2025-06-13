@@ -5,7 +5,10 @@ organizar, visualizar e analisar receitas e despesas*/
 #include <stdio.h>
 #include <string.h>
 
+//CATEGORIA
 typedef struct{
-    test;
-    dhwueijwkbfwkiefbwekfbhwekfbhwefbhjuwefcl
+    int cod;
+    char nome_cat[50];
+    klkl
+
 }
