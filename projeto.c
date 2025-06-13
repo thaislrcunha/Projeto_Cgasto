@@ -5,4 +5,7 @@ organizar, visualizar e analisar receitas e despesas*/
 #include <stdio.h>
 #include <string.h>
 
-typedef struct 
+typedef struct{
+    test;
+    dhwueijwkbfwkiefbwekfbhwekfbhwefbhjuwefcl
+}
