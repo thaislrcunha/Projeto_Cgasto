@@ -8,7 +8,7 @@ organizar, visualizar e analisar receitas e despesas*/
 #define MAX_CATS 100 //limite de categorias
 #define MAX_LANCAMENTOS 1000  // limite de lançamentos
 
-/* Protótipos das funções de cada módulo */
+/* Protótipos das funções */
 void exibir_menu(void); //ok
 int ler_opcao(void); //ok
 void gerenciar_categorias(void); //ok
@@ -17,7 +17,19 @@ void inserir_receita(void); //ok
 void editar_gasto(void); //ok
 void editar_receita(void); //ok
 void remover_gasto(void); //ok
-void editar_receita(void); //ok
+void remover_receita(void); //ok
+
+/* Protótipos de categoria de gastos */
+void submenu_categorias_gastos(void); //OK
+void adicionar_categoria_gasto(void); //OK
+void listar_categorias_gasto(void); //OK
+void remover_categoria_gasto(void); //OK
+
+/* Protótipos de categoria de receita */
+void submenu_categorias_receita(void); //OK
+void adicionar_categoria_receita(void); //OK
+void listar_categorias_receita(void); //OK
+void remover_categoria_receita(void); //OK
 
 /*======================== MENU ========================*/
 void exibir_menu(void) {
@@ -40,7 +52,7 @@ void exibir_menu(void) {
 int ler_opcao(void) { //Lê a opção escolhida pelo usuário
     int opc;
     scanf("%d", &opc);
-    if (opc >= 0 && opc <= 5)
+    if (opc >= 0 && opc <= 7)
         return opc;
     else  return -1; // Opção inválida
 }
@@ -66,8 +78,8 @@ typedef struct{ //dados de entrada
 } RECEITA;
 
 /*Vetores de categorias*/
-CATEGORIA_GASTOS  lista_gastos[MAX_CATS];
-CATEGORIA_RECEITA lista_receita[MAX_CATS];
+CATEGORIA_GASTOS  cat_lista_gastos[MAX_CATS];
+CATEGORIA_RECEITA cat_lista_receita[MAX_CATS];
 
 /*Contadores de categorias*/
 int n_gastos  = 0;
@@ -91,14 +103,14 @@ void gerenciar_categorias(void) { //Gerenciamento de categorias
         printf("0. Voltar ao menu principal\n");
         printf("Escolha o tipo de categoria: ");
         scanf("%d", &tipo);
-        getchar();  // descarta '\n'
+        getchar(); 
 
         switch (tipo) {
             case 1:
-                categorias_gastos();
+                submenu_categorias_gastos();
                 break;
             case 2:
-                categorias_receita();
+                submenu_categorias_receita();
                 break;
             case 0:
                 return;
@@ -138,7 +150,7 @@ void adicionar_categoria_gasto(void) { //adicionar categoria de gastos
     }
     printf("\n...... Adicionar Categoria de Gastos ......\n");
 
-    CATEGORIA_GASTOS *c = &lista_gastos[n_gastos]; //C é um Ponteiro para a próxima posição livre
+    CATEGORIA_GASTOS *c = &cat_lista_gastos[n_gastos]; //C é um Ponteiro para a próxima posição livre
     c->cod = n_gastos + 1; //pega o campo cod apontada por c, cria o novo código
 
     printf("Nome da nova categoria de gasto: ");
@@ -159,33 +171,32 @@ void listar_categorias_gasto(void) { //listar categoria de gastos
     printf("\nCódigo  | Categoria de Gasto\n");
     printf("-----------------------------\n");
     for (int i = 0; i < n_gastos; i++) {
-        printf("%6d  | %s\n", lista_gastos[i].cod, lista_gastos[i].nome_cat);
+        printf("%6d  | %s\n", cat_lista_gastos[i].cod, cat_lista_gastos[i].nome_cat);
     }
 }
 
 void remover_categoria_gasto(void) { //remover categoria de gastos
-    int codigo;
+    int codigo, id = -1;
     printf("\n...... Remover Categoria de Receita ......\n");
     listar_categorias_gasto();  // mostra ao usuário os códigos disponíveis
     printf("\nInforme o CÓDIGO da categoria que deseja remover: ");
     scanf("%d", &codigo);
     getchar();
 
-    int idx = -1; //índice de remoção
     for (int i = 0; i < n_gastos; i++) {
-        if (lista_gastos[i].cod == codigo) {
-            idx = i;
+        if (cat_lista_gastos[i].cod == codigo) {
+            id = i;
             break;
         }
     }
-    if (idx < 0) {
+    if (id<0) {
         printf("Categoria não encontrada.\n");
         return;
     }
     
-    for (int i = idx; i < n_gastos - 1; i++) { //desloca os elementos após retirada
-        lista_gastos[i] = lista_gastos[i + 1];
-        lista_gastos[i].cod = i + 1;
+    for (int i = id; i < n_gastos - 1; i++) { //desloca os elementos após retirada
+        cat_lista_gastos[i] = cat_lista_gastos[i + 1];
+        cat_lista_gastos[i].cod = i + 1;
     }
     n_gastos--;
     printf("Categoria removida!\n");
@@ -221,12 +232,12 @@ void adicionar_categoria_receita(void) { // adicionar categoria de receita
     }
     printf("\n...... Adicionar Categoria de Receita ......\n");
 
-    CATEGORIA_RECEITA *c = &lista_receita[n_receita]; // ponteiro para a próxima posição livre
-    c->cod = n_receita + 1;                            // gera o novo código sequencial
+    CATEGORIA_RECEITA *c = &cat_lista_receita[n_receita]; 
+    c->cod = n_receita + 1;                          
 
     printf("Nome da nova categoria de receita: ");
-    scanf(" %49[^\n]", c->nome_origem);  // lê até o '\n', incluindo espaços
-    getchar();                           // descarta o '\n' que ficou em stdin
+    scanf(" %49[^\n]", c->nome_origem); 
+    getchar();                        
 
     n_receita++;                        
     printf("Categoria de receita adicionada com código %d.\n", c->cod);
@@ -241,14 +252,12 @@ void listar_categorias_receita(void) { // listar categorias de receita
     printf("\nCódigo  | Categoria de Receita\n");
     printf("------------------------------\n");
     for (int i = 0; i < n_receita; i++) {
-        printf("%6d  | %s\n",
-               lista_receita[i].cod,
-               lista_receita[i].nome_origem);
+        printf("%6d  | %s\n", cat_lista_receita[i].cod, cat_lista_receita[i].nome_origem);
     }
 }
 
 void remover_categoria_receita(void) { // remover categoria de receita
-    int codigo, idx = -1;
+    int codigo, id = -1;
     printf("\n...... Remover Categoria de Receita ......\n");
     listar_categorias_receita();  // mostra ao usuário os códigos disponíveis
     printf("\nInforme o CÓDIGO da categoria que deseja remover: ");
@@ -256,19 +265,19 @@ void remover_categoria_receita(void) { // remover categoria de receita
     getchar();
 
     for (int i = 0; i < n_receita; i++) {
-        if (lista_receita[i].cod == codigo) {
-            idx = i;
+        if (cat_lista_receita[i].cod == codigo) {
+            id = i;
             break;
         }
     }
-    if (idx < 0) {
+    if (id < 0) {
         printf("Código %d não encontrado. Nenhuma categoria removida.\n", codigo);
         return;
     }
 
-    for (int i = idx; i < n_receita - 1; i++) {
-        lista_receita[i] = lista_receita[i + 1];
-        lista_receita[i].cod = i + 1; 
+    for (int i = id; i < n_receita - 1; i++) {
+        cat_lista_receita[i] = cat_lista_receita[i + 1];
+        cat_lista_receita[i].cod = i + 1; 
     }
     n_receita--;
     printf("Categoria de receita com CÓDIGO %d removida com sucesso.\n", codigo);
@@ -322,12 +331,13 @@ void inserir_gasto(void) {
 
     // feedback
     printf("\nGasto cadastrado com sucesso!\n");
-    printf("  Categoria [%d] – %s\n", cod_cat, lista_gastos[cod_cat-1].nome_cat);
+    printf("  Categoria [%d] – %s\n", cod_cat, cat_lista_gastos[cod_cat-1].nome_cat);
     printf("  Data: %s   Valor: R$ %.2f\n", g->data, g->valor);
 }
 
 void editar_gasto(void) {
-    int id, opc, nova_cat, nova_data[11];
+    int id, opc, nova_cat;
+    char nova_data[11];
     float novo_valor;
     GASTOS *g = &lista_gastos[id - 1];
 
@@ -344,7 +354,7 @@ void editar_gasto(void) {
     printf("---------------------------------------------------------------\n");
     for (int i = 0; i < n_reg_gastos; i++) {
         GASTOS *g = &lista_gastos[i];
-        printf("%3d | %7d  | %-22s | %10s | R$ %8.2f\n", i + 1, g->cod_cat, lista_gastos[g->cod_cat - 1].nome_cat, g->data, g->valor);
+        printf("%3d | %7d  | %-22s | %10s | R$ %8.2f\n", i + 1, g->cod_cat, cat_lista_gastos[g->cod_cat - 1].nome_cat, g->data, g->valor);
     }
     
     printf("\nDigite o índice (Id) do gasto que deseja editar: ");
@@ -358,7 +368,7 @@ void editar_gasto(void) {
     //Submenu de edição
     do {
         printf("\n::: Editar Gasto [%d] :::\n", id);
-        printf("1. Categoria (atual: %d – %s)\n", g->cod_cat, lista_gastos[g->cod_cat - 1].nome_cat);
+        printf("1. Categoria (atual: %d – %s)\n", g->cod_cat, cat_lista_gastos[g->cod_cat - 1].nome_cat);
         printf("2. Data      (atual: %s)\n", g->data);
         printf("3. Valor     (atual: R$ %.2f)\n", g->valor);
         printf("0. Sair do editor\n");
@@ -380,7 +390,7 @@ void editar_gasto(void) {
                 g->cod_cat = nova_cat;
                 printf("Categoria atualizada para [%d] – %s\n",
                        g->cod_cat,
-                       lista_gastos[g->cod_cat - 1].nome_cat);
+                       cat_lista_gastos[g->cod_cat - 1].nome_cat);
                 break;
             }
             case 2: { //Editar data
@@ -424,7 +434,7 @@ void remover_gasto(void) {
     printf("---------------------------------------------------------------\n");
     for (i=0; i < n_reg_gastos; i++) {
         GASTOS *g = &lista_gastos[i];
-        printf("%3d | %7d  | %-22s | %10s | R$ %8.2f\n", i+1, g->cod_cat, lista_gastos[g->cod_cat-1].nome_cat, g->data, g->valor);
+        printf("%3d | %7d  | %-22s | %10s | R$ %8.2f\n", i+1, g->cod_cat, cat_lista_gastos[g->cod_cat-1].nome_cat, g->data, g->valor);
     }
 
     printf("\nDigite o índice (1 a %d) do gasto que deseja remover: ", n_reg_gastos);
@@ -491,7 +501,7 @@ void inserir_receita(void) {
 
     printf("\nReceita cadastrada com sucesso!\n");
     printf("  Categoria [%d] – %s\n",
-           cod_cat, lista_receita[cod_cat-1].nome_origem);
+           cod_cat, cat_lista_receita[cod_cat-1].nome_origem);
     printf("  Data: %s   Valor: R$ %.2f\n",
            r->data, r->valor);
 }
@@ -512,7 +522,7 @@ void editar_receita(void) {
     printf("---------------------------------------------------------------\n");
     for (i = 0; i < n_reg_receita; i++) {
         r = &lista_receita[i];
-        printf("%3d | %7d  | %-22s | %10s | R$ %8.2f\n", i + 1, r->cod_cat, lista_receita[r->cod_cat - 1].nome_origem, r->data, r->valor);
+        printf("%3d | %7d  | %-22s | %10s | R$ %8.2f\n", i + 1, r->cod_cat, cat_lista_receita[r->cod_cat - 1].nome_origem, r->data, r->valor);
     }
 
     printf("\nDigite o índice (1 a %d) da receita que deseja editar: ", n_reg_receita);
@@ -527,7 +537,7 @@ void editar_receita(void) {
     //Submenu de edição
     do {
         printf("\n::: Editar Receita [%d] :::\n", indice);
-        printf("1. Categoria (atual: %d – %s)\n", r->cod_cat, lista_receita[r->cod_cat - 1].nome_origem);
+        printf("1. Categoria (atual: %d – %s)\n", r->cod_cat, cat_lista_receita[r->cod_cat - 1].nome_origem);
         printf("2. Data      (atual: %s)\n", r->data);
         printf("3. Valor     (atual: R$ %.2f)\n", r->valor);
         printf("0. Sair do editor\n");
@@ -549,7 +559,7 @@ void editar_receita(void) {
                 r->cod_cat = nova_cat;
                 printf("Categoria atualizada para [%d] – %s\n",
                        r->cod_cat,
-                       lista_receita[r->cod_cat - 1].nome_origem);
+                       cat_lista_receita[r->cod_cat - 1].nome_origem);
                 break;
 
             case 2: //data
@@ -593,7 +603,7 @@ void remover_receita(void) {
     printf("---------------------------------------------------------------\n");
     for (i = 0; i < n_reg_receita; i++) {
         RECEITA *r = &lista_receita[i];
-        printf("%3d | %7d  | %-22s | %10s | R$ %8.2f\n", i+1, g->cod_cat, lista_gastos[g->cod_cat-1].nome_cat, g->data, g->valor);
+        printf("%3d | %7d  | %-22s | %10s | R$ %8.2f\n", i+1, r->cod_cat, cat_lista_gastos[r->cod_cat-1].nome_cat, r->data, r->valor);
     }
 
     printf("\nDigite o índice (1 a %d) da receita que deseja remover: ", n_reg_receita);
