@@ -422,7 +422,7 @@ void editar_gasto(void) {
 void remover_gasto(void) {
     int i, indice;
 
-    printf("\n...... Editar Gasto ......\n");
+    printf("\n...... Remover Gasto ......\n");
     if (n_reg_gastos == 0) { // há algo para remover?
         printf("\n>> Não há nenhum gasto para remover.\n");
         return;
