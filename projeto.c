@@ -7,6 +7,7 @@ organizar, visualizar e analisar receitas e despesas*/
 #include <stdlib.h>
 #define MAX_CATS 100 //limite de categorias
 #define MAX_LANCAMENTOS 1000  // limite de lançamentos
+#define MAX_ORCAMENTOS (MAX_CATS * 12) // MAX_ORCAMENTOS deve ser > número de categorias × meses previstos
 
 /* Protótipos das funções */
 void exibir_menu(void); //ok
@@ -18,18 +19,21 @@ void editar_gasto(void); //ok
 void editar_receita(void); //ok
 void remover_gasto(void); //ok
 void remover_receita(void); //ok
-
 /* Protótipos de categoria de gastos */
 void submenu_categorias_gastos(void); //OK
 void adicionar_categoria_gasto(void); //OK
 void listar_categorias_gasto(void); //OK
 void remover_categoria_gasto(void); //OK
-
 /* Protótipos de categoria de receita */
 void submenu_categorias_receita(void); //OK
 void adicionar_categoria_receita(void); //OK
 void listar_categorias_receita(void); //OK
 void remover_categoria_receita(void); //OK
+/* Protótipos de orçamento */
+void gerenciar_orcamentos(void); //ok
+void definir_orcamento(void); //ok
+void listar_orcamentos(void); //ok
+void remover_orcamento(void); //ok
 
 /*======================== MENU ========================*/
 void exibir_menu(void) {
@@ -44,6 +48,7 @@ void exibir_menu(void) {
     printf("5. Editar Receita\n");
     printf("6. Remover Gasto\n");
     printf("7. Remover Receita\n");
+    printf("8. Gerenciar Orçamentos\n");
     printf("0. Sair\n");
     printf("-------------------------------------\n");
     printf("Escolha uma opção: (Escreva apenas o número da opção)\n");
@@ -52,7 +57,7 @@ void exibir_menu(void) {
 int ler_opcao(void) { //Lê a opção escolhida pelo usuário
     int opc;
     scanf("%d", &opc);
-    if (opc >= 0 && opc <= 7)
+    if (opc >= 0 && opc <= 8)
         return opc;
     else  return -1; // Opção inválida
 }
@@ -76,6 +81,13 @@ typedef struct{ //dados de entrada
     char data[11];
     float valor;
 } RECEITA;
+typedef struct { // orçamento mensal por categoria
+    int   cod_cat;
+    int   mes;
+    int   ano;
+    float teto;
+} ORCAMENTO;
+
 
 /*Vetores de categorias*/
 CATEGORIA_GASTOS  cat_lista_gastos[MAX_CATS];
@@ -84,14 +96,15 @@ CATEGORIA_RECEITA cat_lista_receita[MAX_CATS];
 /*Contadores de categorias*/
 int n_gastos  = 0;
 int n_receita = 0;
-
 /* Vetor de lançamentos de gastos e contador */
 GASTOS lista_gastos[MAX_LANCAMENTOS];
 int n_reg_gastos = 0;
-
 /* Vetor global e contador para receitas */
 RECEITA lista_receita[MAX_LANCAMENTOS];
 int n_reg_receita = 0;
+/* Vetor global e contador para orçamentos */
+ORCAMENTO lista_orcamentos[MAX_ORCAMENTOS];
+int      n_orcamentos = 0;
 
 /*======================== CATEGORIAS ========================*/
 void gerenciar_categorias(void) { //Gerenciamento de categorias
@@ -286,9 +299,9 @@ void remover_categoria_receita(void) { // remover categoria de receita
 /*======================== GERENCIAR DADOS ========================*/
 /*-------------------------- GASTOS --------------------------*/
 void inserir_gasto(void) {
-    int cod_cat;
+    int cod_cat, dia, mes, ano, dj, mj, aj;
     char data[11];
-    float valor;
+    float valor, soma = 0.0f;
     GASTOS *g = &lista_gastos[n_reg_gastos]; // armazenamento
 
     printf("\n...... Adicionar Gasto ......\n");
@@ -333,6 +346,8 @@ void inserir_gasto(void) {
     printf("\nGasto cadastrado com sucesso!\n");
     printf("  Categoria [%d] – %s\n", cod_cat, cat_lista_gastos[cod_cat-1].nome_cat);
     printf("  Data: %s   Valor: R$ %.2f\n", g->data, g->valor);
+
+    // Alerta???
 }
 
 void editar_gasto(void) {
@@ -623,6 +638,133 @@ void remover_receita(void) {
     printf("Receita de índice %d removida com sucesso!\n", indice);
 }
 
+/*======================== GERENCIAR ORÇAMENTO ========================*/
+void gerenciar_orcamentos(void) {
+    int op;
+    do {
+        printf("\n======= GERENCIAR ORÇAMENTOS MENSAIS ========\n");
+        printf("1. Definir teto\n");
+        printf("2. Listar tetos\n");
+        printf("3. Remover teto\n");
+        printf("0. Voltar\n");
+        printf("Escolha: ");
+        scanf("%d", &op);
+        getchar();
+        switch (op) {
+            case 1: 
+                definir_orcamento(); 
+                break;
+            case 2: 
+                listar_orcamentos(); 
+                break;
+            case 3: 
+                remover_orcamento(); 
+                break;
+            case 0: return;
+            default: printf("Inválido!\n");
+        }
+    } while (1);
+}
+
+void definir_orcamento(void) {
+    printf("\n...... Definir Orçamento ......\n");
+    int cod, mes, ano;
+    float teto;
+    ORCAMENTO *o = &lista_orcamentos[n_orcamentos++];
+    
+    if (n_orcamentos >= MAX_ORCAMENTOS) { //verificar limite
+        printf("Limite de orçamentos atingido.\n");
+        return;
+    }
+
+    listar_categorias_gasto();
+
+    do {
+        printf("Código da categoria: ");
+        scanf("%d", &cod);
+        getchar();
+    } while (cod<1 || cod>n_gastos);
+    
+    printf("Mês (1–12): ");
+    scanf("%d", &mes); 
+    getchar();
+    printf("Ano (ex.: 2025): ");
+    scanf("%d", &ano);
+    getchar();
+
+    printf("Teto de despesa (R$): ");
+    scanf("%f", &teto);
+    getchar();
+
+    //Sobrescrever se existir
+    for (int i = 0; i<n_orcamentos; i++) {
+        ORCAMENTO *o = &lista_orcamentos[i];
+        if (o->cod_cat==cod && o->mes==mes && o->ano==ano) {
+            o->teto = teto;
+            printf("Teto atualizado!\n");
+            return;
+        }
+    }
+    
+    o->cod_cat = cod; 
+    o->mes = mes; 
+    o->ano = ano; 
+    o->teto = teto;
+    printf("Teto definido.\n");
+}
+
+void listar_orcamentos(void) {
+    printf("\n...... Listar Orçamento ......\n");
+    if (n_orcamentos==0) { //verificar
+        printf("Nenhum teto definido.\n"); return;
+    }
+    printf("\n Mês/Ano  | Cód.Cat | Categoria         | Teto\n");
+    printf("----------------------------------------------\n");
+    for(int i=0;i<n_orcamentos;i++){
+        ORCAMENTO *o=&lista_orcamentos[i];
+        printf("%2d/%4d   | %7d  | %-16s | R$ %8.2f\n",o->mes, o->ano, o->cod_cat, cat_lista_gastos[o->cod_cat-1].nome_cat, o->teto);
+    }
+}
+
+void remover_orcamento(void) {
+    int i, mes, ano, cod, id=-1;
+    printf("\n...... Listar Orçamento ......\n");
+    
+    if(n_orcamentos==0){
+        printf("Nenhum teto para remover.\n"); 
+        return;
+    }
+    
+    printf("Mês: "); 
+    scanf("%d",&mes); 
+    getchar();
+
+    printf("Ano: "); 
+    scanf("%d",&ano); 
+    getchar();
+
+    printf("Código da categoria: ");
+    scanf("%d",&cod);
+    getchar();
+
+    for(i=0;i<n_orcamentos;i++){
+        ORCAMENTO *o=&lista_orcamentos[i];
+        if(o->mes==mes&&o->ano==ano&&o->cod_cat==cod){
+            id=i; 
+            break;
+        }
+    }
+    if(id<0){ 
+        printf("Não encontrado!\n"); 
+        return;
+    }
+    for(i=id;i<n_orcamentos-1;i++){
+        lista_orcamentos[i] = lista_orcamentos[i+1];
+    }
+    n_orcamentos--;
+    printf("Teto removido!\n");
+}
+
 
 /*======================== PRINCIPAL ========================*/
 int main(void) {
@@ -652,6 +794,9 @@ int main(void) {
                 break;
             case 7:
                 remover_receita();
+                break;
+            case 8: 
+                gerenciar_orcamentos(); 
                 break;
             case 0:
                 printf("\nEncerrando o sistema. Até logo!\n");
