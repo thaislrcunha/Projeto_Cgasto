@@ -34,6 +34,11 @@ void gerenciar_orcamentos(void); //ok
 void definir_orcamento(void); //ok
 void listar_orcamentos(void); //ok
 void remover_orcamento(void); //ok
+/* Protótipos de relatórios */
+void menu_relatorios(void); 
+void relatorio_despesas(void); 
+void relatorio_receita(void); 
+void resultado_relatorios(void);
 
 /*======================== MENU ========================*/
 void exibir_menu(void) {
@@ -136,7 +141,7 @@ void gerenciar_categorias(void) { //Gerenciamento de categorias
 /*-------------------------- GASTOS  --------------------------*/
 void submenu_categorias_gastos(void) { //Menu para categorias de GASTOS
     int opc;
-    do {
+    do{
         printf("\n------- Categorias de Gasto --------\n");
         printf("1. Adicionar\n");
         printf("2. Listar\n");
@@ -157,7 +162,7 @@ void submenu_categorias_gastos(void) { //Menu para categorias de GASTOS
 }
 
 void adicionar_categoria_gasto(void) { //adicionar categoria de gastos
-    if (n_gastos >= MAX_CATS) { //verificar se há espaço
+    if(n_gastos >= MAX_CATS) { //verificar se há espaço
         printf("Limite de categorias atingido.\n");
         return;
     }
@@ -176,38 +181,39 @@ void adicionar_categoria_gasto(void) { //adicionar categoria de gastos
 }
 
 void listar_categorias_gasto(void) { //listar categoria de gastos
-    if (n_gastos == 0) {
-        printf("Nenhuma categoria cadastrada.\n");
+    int i;
+    if(n_gastos == 0) {
+        printf("\nNenhuma categoria cadastrada!\n");
         return;
     }
     printf("\n...... Listar Categorias ......\n");
     printf("\nCódigo  | Categoria de Gasto\n");
     printf("-----------------------------\n");
-    for (int i = 0; i < n_gastos; i++) {
+    for(i=0; i < n_gastos; i++) {
         printf("%6d  | %s\n", cat_lista_gastos[i].cod, cat_lista_gastos[i].nome_cat);
     }
 }
 
 void remover_categoria_gasto(void) { //remover categoria de gastos
-    int codigo, id = -1;
+    int codigo, id = -1, i;
     printf("\n...... Remover Categoria de Receita ......\n");
     listar_categorias_gasto();  // mostra ao usuário os códigos disponíveis
     printf("\nInforme o CÓDIGO da categoria que deseja remover: ");
     scanf("%d", &codigo);
     getchar();
 
-    for (int i = 0; i < n_gastos; i++) {
+    for(i=0; i < n_gastos; i++) {
         if (cat_lista_gastos[i].cod == codigo) {
             id = i;
             break;
         }
     }
-    if (id<0) {
+    if(id<0) {
         printf("Categoria não encontrada.\n");
         return;
     }
     
-    for (int i = id; i < n_gastos - 1; i++) { //desloca os elementos após retirada
+    for(i = id; i < n_gastos - 1; i++) { //desloca os elementos após retirada
         cat_lista_gastos[i] = cat_lista_gastos[i + 1];
         cat_lista_gastos[i].cod = i + 1;
     }
@@ -239,7 +245,7 @@ void submenu_categorias_receita(void) { //Menu para categorias de receita
 }
 
 void adicionar_categoria_receita(void) { // adicionar categoria de receita
-    if (n_receita >= MAX_CATS) { // verificar se há espaço
+    if(n_receita >= MAX_CATS) { // verificar se há espaço
         printf("Limite de categorias de receita atingido.\n");
         return;
     }
@@ -257,38 +263,39 @@ void adicionar_categoria_receita(void) { // adicionar categoria de receita
 }
 
 void listar_categorias_receita(void) { // listar categorias de receita
-    if (n_receita == 0) {
+    int i;
+    if(n_receita == 0) {
         printf("Nenhuma categoria de receita cadastrada.\n");
         return;
     }
     printf("\n...... Listar Categorias de Receita ......\n");
     printf("\nCódigo  | Categoria de Receita\n");
     printf("------------------------------\n");
-    for (int i = 0; i < n_receita; i++) {
+    for(i=0; i < n_receita; i++) {
         printf("%6d  | %s\n", cat_lista_receita[i].cod, cat_lista_receita[i].nome_origem);
     }
 }
 
 void remover_categoria_receita(void) { // remover categoria de receita
-    int codigo, id = -1;
+    int codigo, id = -1, i;
     printf("\n...... Remover Categoria de Receita ......\n");
     listar_categorias_receita();  // mostra ao usuário os códigos disponíveis
     printf("\nInforme o CÓDIGO da categoria que deseja remover: ");
     scanf("%d", &codigo);
     getchar();
 
-    for (int i = 0; i < n_receita; i++) {
-        if (cat_lista_receita[i].cod == codigo) {
+    for(i=0; i < n_receita; i++) {
+        if(cat_lista_receita[i].cod == codigo) {
             id = i;
             break;
         }
     }
-    if (id < 0) {
+    if(id < 0) {
         printf("Código %d não encontrado. Nenhuma categoria removida.\n", codigo);
         return;
     }
 
-    for (int i = id; i < n_receita - 1; i++) {
+    for(i=id; i < n_receita - 1; i++) {
         cat_lista_receita[i] = cat_lista_receita[i + 1];
         cat_lista_receita[i].cod = i + 1; 
     }
@@ -346,12 +353,10 @@ void inserir_gasto(void) {
     printf("\nGasto cadastrado com sucesso!\n");
     printf("  Categoria [%d] – %s\n", cod_cat, cat_lista_gastos[cod_cat-1].nome_cat);
     printf("  Data: %s   Valor: R$ %.2f\n", g->data, g->valor);
-
-    // Alerta???
 }
 
 void editar_gasto(void) {
-    int id, opc, nova_cat;
+    int id, opc, nova_cat, i;
     char nova_data[11];
     float novo_valor;
     GASTOS *g = &lista_gastos[id - 1];
@@ -367,7 +372,7 @@ void editar_gasto(void) {
     printf("\n::: Lista de Gastos Cadastrados :::\n");
     printf("Id | Cód.Cat | Categoria               | Data       | Valor\n");
     printf("---------------------------------------------------------------\n");
-    for (int i = 0; i < n_reg_gastos; i++) {
+    for (i=0; i < n_reg_gastos; i++) {
         GASTOS *g = &lista_gastos[i];
         printf("%3d | %7d  | %-22s | %10s | R$ %8.2f\n", i + 1, g->cod_cat, cat_lista_gastos[g->cod_cat - 1].nome_cat, g->data, g->valor);
     }
@@ -384,8 +389,8 @@ void editar_gasto(void) {
     do {
         printf("\n::: Editar Gasto [%d] :::\n", id);
         printf("1. Categoria (atual: %d – %s)\n", g->cod_cat, cat_lista_gastos[g->cod_cat - 1].nome_cat);
-        printf("2. Data      (atual: %s)\n", g->data);
-        printf("3. Valor     (atual: R$ %.2f)\n", g->valor);
+        printf("2. Data (atual: %s)\n", g->data);
+        printf("3. Valor (atual: R$ %.2f)\n", g->valor);
         printf("0. Sair do editor\n");
         printf("Escolha o campo para editar: ");
         scanf("%d", &opc);
@@ -639,6 +644,7 @@ void remover_receita(void) {
 }
 
 /*======================== GERENCIAR ORÇAMENTO ========================*/
+/*
 void gerenciar_orcamentos(void) {
     int op;
     do {
@@ -764,7 +770,95 @@ void remover_orcamento(void) {
     n_orcamentos--;
     printf("Teto removido!\n");
 }
+*/
+/*============================= RELATÓRIOS =============================*/
+void menu_relatorios(void) {
+    int op;
+    do {
+        printf("\n======= GERENCIAR RELATÓRIOS ========\n");
+        printf("1. Relatorio de despesas\n");
+        printf("2. Relatorios de receita\n");
+        printf("3. Resultados totais\n");
+        printf("0. Voltar\n");
+        printf("Escolha: ");
+        scanf("%d", &op);
+        getchar();
+        switch (op) {
+            case 1: 
+                relatorio_despesas(); 
+                break;
+            case 2: 
+                relatorio_receita(); 
+                break;
+            case 3: 
+                resultado_relatorio(); 
+                break;
+            case 0: return;
+            default: printf("Inválido!\n");
+        }
+    } while (1);
+}
 
+void relatorio_despesas(void){
+    int r, i, cod;
+    char data[11];
+    float soma_dia=0, soma_mes=0, soma_ano=0;
+
+    if(n_reg_gastos == 0){
+        printf("\nNenhum gasto registrado!\n");
+        printf("Insira gastos para o relatório!\n");
+        return;
+    }
+
+    printf("\n...... Relatório de Gastos ......\n");
+    printf("Tipo de relatório: \n");
+    printf(" 1. Relatório por dia\n 2. Relatório por mês\n 3. Relatório por ano\n 0. Voltar\n");
+    printf("Digite o tipo de relatório desejado: \n");
+    scanf("%d", &r);
+
+    switch (r){
+        case 0: return;
+
+        case 1: //diário
+            printf("Digite a data (dd/mm/aaaa): ");
+            scanf("%10s", data);
+
+            printf("\n...... Lista de Gastos ......\n");
+            printf("\nCategoria            | Valor R$\n");
+            printf("------------------------------\n");
+            for (i=0; i < n_reg_gastos; i++) {
+               if(strcmp(lista_gastos[i].data, data)==0){
+                    printf("");
+                    cod = lista_gastos[i].cod_cat;
+                    printf("%s | R$ %7.2f\n", cat_lista_gastos[cod-1].nome_cat, lista_gastos[i].valor);
+                    soma_dia += lista_gastos[i].valor;
+               }
+            }
+            printf("-----------------------------------\n");
+            printf("TOTAL: R$%.2f", soma_dia);
+            break;
+        case 2: //mensal <<<<<<<<<------------------------ PARAMOS AQUI
+            printf("Digite o mes (mm/aaaa): ");
+            scanf("%7s", data);
+            
+            break;
+        case 3: //anual
+            printf("Digite o ano (aaaa): ");
+            scanf("%4s", data);
+            
+            break;
+        default: printf("Opção inválida!\n");
+            break;
+    }
+} 
+
+
+void relatorio_receita(void){
+    return;
+}
+void resultado_relatorios(void){
+    return;
+}
 
 /*======================== PRINCIPAL ========================*/
 int main(void) {
