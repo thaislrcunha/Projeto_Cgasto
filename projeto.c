@@ -1,6 +1,12 @@
 /* Sistema digital de controle financeiro pessoal, 
 com funcionalidades evolutivas que permitam registrar, 
-organizar, visualizar e analisar receitas e despesas*/
+organizar, visualizar e analisar receitas e despesas
+
+Autores:    Isabella Rodrigues Mendonça - 202501289
+            Júlia Oliveira Almeida - 202402810
+            Ana Vitória Silva da Luz Nascimento - 202006547
+            Thais Lima Rodrigues da Cunha - 202500849
+*/
 
 #include <stdio.h>
 #include <string.h>
@@ -29,16 +35,10 @@ void submenu_categorias_receita(void); //OK
 void adicionar_categoria_receita(void); //OK
 void listar_categorias_receita(void); //OK
 void remover_categoria_receita(void); //OK
-/* Protótipos de orçamento */
-void gerenciar_orcamentos(void); //ok
-void definir_orcamento(void); //ok
-void listar_orcamentos(void); //ok
-void remover_orcamento(void); //ok
 /* Protótipos de relatórios */
-void menu_relatorios(void); 
-void relatorio_despesas(void); 
-void relatorio_receita(void); 
-void resultado_relatorios(void);
+void menu_relatorios(void); //ok
+void relatorio_despesas(void); //ok 
+void relatorio_receita(void); //ok
 
 /*======================== MENU ========================*/
 void exibir_menu(void) {
@@ -53,7 +53,7 @@ void exibir_menu(void) {
     printf("5. Editar Receita\n");
     printf("6. Remover Gasto\n");
     printf("7. Remover Receita\n");
-    printf("8. Gerenciar Orçamentos\n");
+    printf("8. Relatórios\n");
     printf("0. Sair\n");
     printf("-------------------------------------\n");
     printf("Escolha uma opção: (Escreva apenas o número da opção)\n");
@@ -643,134 +643,6 @@ void remover_receita(void) {
     printf("Receita de índice %d removida com sucesso!\n", indice);
 }
 
-/*======================== GERENCIAR ORÇAMENTO ========================*/
-/*
-void gerenciar_orcamentos(void) {
-    int op;
-    do {
-        printf("\n======= GERENCIAR ORÇAMENTOS MENSAIS ========\n");
-        printf("1. Definir teto\n");
-        printf("2. Listar tetos\n");
-        printf("3. Remover teto\n");
-        printf("0. Voltar\n");
-        printf("Escolha: ");
-        scanf("%d", &op);
-        getchar();
-        switch (op) {
-            case 1: 
-                definir_orcamento(); 
-                break;
-            case 2: 
-                listar_orcamentos(); 
-                break;
-            case 3: 
-                remover_orcamento(); 
-                break;
-            case 0: return;
-            default: printf("Inválido!\n");
-        }
-    } while (1);
-}
-
-void definir_orcamento(void) {
-    printf("\n...... Definir Orçamento ......\n");
-    int cod, mes, ano;
-    float teto;
-    ORCAMENTO *o = &lista_orcamentos[n_orcamentos++];
-    
-    if (n_orcamentos >= MAX_ORCAMENTOS) { //verificar limite
-        printf("Limite de orçamentos atingido.\n");
-        return;
-    }
-
-    listar_categorias_gasto();
-
-    do {
-        printf("Código da categoria: ");
-        scanf("%d", &cod);
-        getchar();
-    } while (cod<1 || cod>n_gastos);
-    
-    printf("Mês (1–12): ");
-    scanf("%d", &mes); 
-    getchar();
-    printf("Ano (ex.: 2025): ");
-    scanf("%d", &ano);
-    getchar();
-
-    printf("Teto de despesa (R$): ");
-    scanf("%f", &teto);
-    getchar();
-
-    //Sobrescrever se existir
-    for (int i = 0; i<n_orcamentos; i++) {
-        ORCAMENTO *o = &lista_orcamentos[i];
-        if (o->cod_cat==cod && o->mes==mes && o->ano==ano) {
-            o->teto = teto;
-            printf("Teto atualizado!\n");
-            return;
-        }
-    }
-    
-    o->cod_cat = cod; 
-    o->mes = mes; 
-    o->ano = ano; 
-    o->teto = teto;
-    printf("Teto definido.\n");
-}
-
-void listar_orcamentos(void) {
-    printf("\n...... Listar Orçamento ......\n");
-    if (n_orcamentos==0) { //verificar
-        printf("Nenhum teto definido.\n"); return;
-    }
-    printf("\n Mês/Ano  | Cód.Cat | Categoria         | Teto\n");
-    printf("----------------------------------------------\n");
-    for(int i=0;i<n_orcamentos;i++){
-        ORCAMENTO *o=&lista_orcamentos[i];
-        printf("%2d/%4d   | %7d  | %-16s | R$ %8.2f\n",o->mes, o->ano, o->cod_cat, cat_lista_gastos[o->cod_cat-1].nome_cat, o->teto);
-    }
-}
-
-void remover_orcamento(void) {
-    int i, mes, ano, cod, id=-1;
-    printf("\n...... Listar Orçamento ......\n");
-    
-    if(n_orcamentos==0){
-        printf("Nenhum teto para remover.\n"); 
-        return;
-    }
-    
-    printf("Mês: "); 
-    scanf("%d",&mes); 
-    getchar();
-
-    printf("Ano: "); 
-    scanf("%d",&ano); 
-    getchar();
-
-    printf("Código da categoria: ");
-    scanf("%d",&cod);
-    getchar();
-
-    for(i=0;i<n_orcamentos;i++){
-        ORCAMENTO *o=&lista_orcamentos[i];
-        if(o->mes==mes&&o->ano==ano&&o->cod_cat==cod){
-            id=i; 
-            break;
-        }
-    }
-    if(id<0){ 
-        printf("Não encontrado!\n"); 
-        return;
-    }
-    for(i=id;i<n_orcamentos-1;i++){
-        lista_orcamentos[i] = lista_orcamentos[i+1];
-    }
-    n_orcamentos--;
-    printf("Teto removido!\n");
-}
-*/
 /*============================= RELATÓRIOS =============================*/
 void menu_relatorios(void) {
     int op;
@@ -778,7 +650,6 @@ void menu_relatorios(void) {
         printf("\n======= GERENCIAR RELATÓRIOS ========\n");
         printf("1. Relatorio de despesas\n");
         printf("2. Relatorios de receita\n");
-        printf("3. Resultados totais\n");
         printf("0. Voltar\n");
         printf("Escolha: ");
         scanf("%d", &op);
@@ -790,9 +661,6 @@ void menu_relatorios(void) {
             case 2: 
                 relatorio_receita(); 
                 break;
-            case 3: 
-                resultado_relatorio(); 
-                break;
             case 0: return;
             default: printf("Inválido!\n");
         }
@@ -801,7 +669,7 @@ void menu_relatorios(void) {
 
 void relatorio_despesas(void){
     int r, i, cod;
-    char data[11];
+    char data[11], mes_ano[8], ano_reg[5];
     float soma_dia=0, soma_mes=0, soma_ano=0;
 
     if(n_reg_gastos == 0){
@@ -816,14 +684,16 @@ void relatorio_despesas(void){
     printf("Digite o tipo de relatório desejado: \n");
     scanf("%d", &r);
 
-    switch (r){
-        case 0: return;
+    switch(r){
+        case 0: 
+            return;
 
         case 1: //diário
             printf("Digite a data (dd/mm/aaaa): ");
             scanf("%10s", data);
+            getchar();
 
-            printf("\n...... Lista de Gastos ......\n");
+            printf("\n...... Lista de Gastos Diário ......\n");
             printf("\nCategoria            | Valor R$\n");
             printf("------------------------------\n");
             for (i=0; i < n_reg_gastos; i++) {
@@ -835,30 +705,161 @@ void relatorio_despesas(void){
                }
             }
             printf("-----------------------------------\n");
-            printf("TOTAL: R$%.2f", soma_dia);
+            printf("TOTAL DIÁRIO: R$%.2f", soma_dia);
             break;
-        case 2: //mensal <<<<<<<<<------------------------ PARAMOS AQUI
-            printf("Digite o mes (mm/aaaa): ");
+
+        case 2: //mensal
+            printf("Digite o mês (mm/aaaa): ");
             scanf("%7s", data);
-            
+            getchar();
+
+            printf("\n...... Lista de Gastos do Mês ......\n");
+            printf("\nCategoria            | Valor R$\n");
+            printf("-------------------------------\n");
+
+            soma_mes = 0;
+            for(i=0; i<n_reg_gastos; i++) {
+                strncpy(mes_ano, lista_gastos[i].data+3, 7);
+                mes_ano[7] = '\0';
+                if (strcmp(mes_ano, data) == 0) {
+                    cod = lista_gastos[i].cod_cat;
+                    printf("%-20s | R$ %7.2f\n", cat_lista_gastos[cod-1].nome_cat, lista_gastos[i].valor);
+                    soma_mes += lista_gastos[i].valor;
+                }
+            }
+            printf("---------------------------------\n");
+            printf("TOTAL MENSAL: R$ %.2f\n", soma_mes);
             break;
+
         case 3: //anual
             printf("Digite o ano (aaaa): ");
             scanf("%4s", data);
-            
+            getchar();
+
+            printf("\n...... Lista de Gastos do Ano ......\n");
+            printf("\nCategoria            | Valor R$\n");
+            printf("-----------------------------------\n");
+
+            soma_ano = 0;
+            for (i=0; i<n_reg_gastos; i++) {
+                strncpy(ano_reg, lista_gastos[i].data + 6, 4);
+                ano_reg[4] = '\0';
+
+                if(strcmp(ano_reg, data) == 0) {
+                    cod = lista_gastos[i].cod_cat;
+                    printf("%-20s | R$ %7.2f\n", cat_lista_gastos[cod-1].nome_cat, lista_gastos[i].valor);
+                    soma_ano += lista_gastos[i].valor;
+                }
+            }
+            printf("------------------------------\n");
+            printf("TOTAL ANUAL: R$ %.2f\n", soma_ano);
             break;
+
         default: printf("Opção inválida!\n");
             break;
     }
 } 
 
-
 void relatorio_receita(void){
-    return;
+    int r, i, cod;
+    char data[11], mes_ano[8], ano_reg[5];
+    float soma_dia = 0, soma_mes = 0, soma_ano = 0;
+
+    if (n_reg_receita==0) {
+        printf("\nNenhuma receita registrada!\n");
+        printf("Insira receitas para o relatório!\n");
+        return;
+    }
+
+    printf("\n...... Relatório de Receitas ......\n");
+    printf("Tipo de relatório:\n");
+    printf(" 1. Relatório por dia\n");
+    printf(" 2. Relatório por mês\n");
+    printf(" 3. Relatório por ano\n");
+    printf(" 0. Voltar\n");
+    printf("Digite o tipo de relatório desejado: ");
+    scanf("%d", &r);
+    getchar();
+
+    switch(r){
+        case 0:
+            return;
+
+        case 1: //diário
+            printf("Digite a data (dd/mm/aaaa): ");
+            scanf("%10s", data);
+            getchar();
+
+            printf("\n...... Lista de Receitas Diário ......\n");
+            printf("\nCategoria de Receita  | Valor R$\n");
+            printf("-----------------------------------\n");
+            soma_dia = 0;
+
+            for (i=0; i<n_reg_receita; i++) {
+                if(strcmp(lista_receita[i].data, data) == 0){
+                    cod = lista_receita[i].cod_cat;
+                    printf("%-20s | R$ %7.2f\n", cat_lista_receita[cod - 1].nome_origem, lista_receita[i].valor);
+                    soma_dia += lista_receita[i].valor;
+                }
+            }
+            printf("-----------------------------------\n");
+            printf("TOTAL DIÁRIO: R$ %.2f\n", soma_dia);
+            break;
+
+        case 2:  //mensal
+            printf("Digite o mês (mm/aaaa): ");
+            scanf("%7s", data);
+            getchar();
+
+            printf("\n...... Lista de Receitas do Mês ......\n");
+            printf("\nCategoria de Receita  | Valor R$\n");
+            printf("---------------------------------\n");
+            soma_mes = 0;
+
+            for (i=0; i<n_reg_receita; i++) {
+                strncpy(mes_ano, lista_receita[i].data + 3, 7);
+                mes_ano[7] = '\0';
+
+                if (strcmp(mes_ano, data) == 0) {
+                    cod = lista_receita[i].cod_cat;
+                    printf("%-20s | R$ %7.2f\n", cat_lista_receita[cod-1].nome_origem, lista_receita[i].valor);
+                    soma_mes += lista_receita[i].valor;
+                }
+            }
+            printf("---------------------------------\n");
+            printf("TOTAL MENSAL: R$ %.2f\n", soma_mes);
+            break;
+
+        case 3: //anual
+            printf("Digite o ano (aaaa): ");
+            scanf("%4s", data);
+            getchar();
+
+            printf("\n...... Lista de Receitas do Ano ......\n");
+            printf("\nCategoria de Receita  | Valor R$\n");
+            printf("---------------------------------\n");
+            soma_ano = 0;
+
+            for (i=0; i < n_reg_receita; i++) {
+                strncpy(ano_reg, lista_receita[i].data+6, 4);
+                ano_reg[4] = '\0';
+
+                if(strcmp(ano_reg, data) == 0){
+                    cod = lista_receita[i].cod_cat;
+                    printf("%-20s | R$ %7.2f\n", cat_lista_receita[cod-1].nome_origem, lista_receita[i].valor);
+                    soma_ano += lista_receita[i].valor;
+                }
+            }
+            printf("--------------------------------------\n");
+            printf("TOTAL ANUAL: R$ %.2f\n", soma_ano);
+            break;
+
+        default:
+            printf("Opção inválida!\n");
+            break;
+    }
 }
-void resultado_relatorios(void){
-    return;
-}
+
 
 /*======================== PRINCIPAL ========================*/
 int main(void) {
@@ -889,8 +890,8 @@ int main(void) {
             case 7:
                 remover_receita();
                 break;
-            case 8: 
-                gerenciar_orcamentos(); 
+            case 8:
+                menu_relatorios();
                 break;
             case 0:
                 printf("\nEncerrando o sistema. Até logo!\n");
