@@ -86,13 +86,6 @@ typedef struct{ //dados de entrada
     char data[11];
     float valor;
 } RECEITA;
-typedef struct { // orçamento mensal por categoria
-    int   cod_cat;
-    int   mes;
-    int   ano;
-    float teto;
-} ORCAMENTO;
-
 
 /*Vetores de categorias*/
 CATEGORIA_GASTOS  cat_lista_gastos[MAX_CATS];
@@ -107,9 +100,6 @@ int n_reg_gastos = 0;
 /* Vetor global e contador para receitas */
 RECEITA lista_receita[MAX_LANCAMENTOS];
 int n_reg_receita = 0;
-/* Vetor global e contador para orçamentos */
-ORCAMENTO lista_orcamentos[MAX_ORCAMENTOS];
-int      n_orcamentos = 0;
 
 /*======================== CATEGORIAS ========================*/
 void gerenciar_categorias(void) { //Gerenciamento de categorias
