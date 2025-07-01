@@ -15,6 +15,9 @@ Autores:    Isabella Rodrigues Mendonça - 202501289
 #define MAX_CATS 100 //limite de categorias
 #define MAX_LANCAMENTOS 1000  // limite de lançamentos
 #define MAX_ORCAMENTOS (MAX_CATS * 12) // MAX_ORCAMENTOS deve ser > número de categorias × meses previstos
+#define MAX_USERS 10 
+#define MAX_USERNAME_LEN 50
+#define MAX_PASSWORD_HASH_LEN 64 
 
 /* Blocos das funções */
 void exibir_menu(void); //ok
@@ -40,6 +43,12 @@ void remover_categoria_receita(void); //OK
 void menu_relatorios(void); //ok
 void relatorio_despesas(void); //ok 
 void relatorio_receita(void); //ok
+/* usuário */
+void gerar_hash_senha(const char *senha, char *hash_saida); //ok
+void carregar_usuarios(void); //ok
+void salvar_usuarios(void); //ok
+void criar_usuario(void); //ok
+int fazer_login(void); //ok
 
 /*======================== MENU ========================*/
 void exibir_menu(void) {
@@ -87,6 +96,10 @@ typedef struct{ //dados de entrada
     char data[11];
     float valor;
 } RECEITA;
+typedef struct {
+    char username[MAX_USERNAME_LEN];
+    char password_hash[MAX_PASSWORD_HASH_LEN];
+} USUARIO;
 
 /*Vetores de categorias*/
 CATEGORIA_GASTOS  cat_lista_gastos[MAX_CATS];
@@ -101,6 +114,11 @@ int n_reg_gastos = 0;
 /* Vetor global e contador para receitas */
 RECEITA lista_receita[MAX_LANCAMENTOS];
 int n_reg_receita = 0;
+
+/* Usuários */
+USUARIO lista_usuarios[MAX_USERS];
+int n_usuarios = 0;
+int usuario_atual_idx = -1; 
 
 /*======================== CATEGORIAS ========================*/
 void gerenciar_categorias(void) { //Gerenciamento de categorias
@@ -851,10 +869,141 @@ void relatorio_receita(void){
     }
 }
 
+/*============================= USUÁRIOS =============================*/
+
+void gerar_hash_senha(const char *senha, char *hash_saida) {
+    int i;
+    for (i = 0; senha[i] != '\0' && i < MAX_PASSWORD_HASH_LEN - 1; i++) {
+        hash_saida[i] = senha[i] + 1; // Um "shift" simples para demonstrar alteração
+    }
+    hash_saida[i] = '\0';
+}
+
+// Carrega usuários do arquivo
+void carregar_usuarios(void) {
+    FILE *fp = fopen("usuarios.dat", "rb");
+    if (fp == NULL) {
+        printf("Arquivo de usuários 'usuarios.dat' não encontrado. Um novo será criado no primeiro cadastro.\n");
+        return;
+    }
+    fread(&n_usuarios, sizeof(int), 1, fp);
+    if (n_usuarios > 0 && n_usuarios <= MAX_USERS) {
+        fread(lista_usuarios, sizeof(USUARIO), n_usuarios, fp);
+    } else {
+        n_usuarios = 0; // Se o número lido for inválido, reseta
+    }
+    fclose(fp);
+    printf("Usuários carregados (%d).\n", n_usuarios);
+}
+
+// Salva usuários no arquivo
+void salvar_usuarios(void) {
+    FILE *fp = fopen("usuarios.dat", "wb");
+    if (fp == NULL) {
+        printf("Erro ao salvar usuários em 'usuarios.dat'.\n");
+        return;
+    }
+    fwrite(&n_usuarios, sizeof(int), 1, fp);
+    fwrite(lista_usuarios, sizeof(USUARIO), n_usuarios, fp);
+    fclose(fp);
+    printf("Usuários salvos com sucesso.\n");
+}
+
+// Cria um novo usuário
+void criar_usuario(void) {
+    if (n_usuarios >= MAX_USERS) {
+        printf("Limite de usuários atingido. Não é possível criar mais usuários.\n");
+        return;
+    }
+
+    char username[MAX_USERNAME_LEN];
+    char password[MAX_PASSWORD_HASH_LEN];
+    char password_hash[MAX_PASSWORD_HASH_LEN];
+
+    printf("\n--- Criar Novo Usuário ---\n");
+    printf("Digite um nome de usuário: ");
+    scanf("%49s", username);
+    getchar(); // Consumir o \n
+
+    // Verificar se o nome de usuário já existe
+    for (int i = 0; i < n_usuarios; i++) {
+        if (strcmp(lista_usuarios[i].username, username) == 0) {
+            printf("Nome de usuário '%s' já existe. Por favor, escolha outro.\n", username);
+            return;
+        }
+    }
+
+    printf("Digite uma senha: ");
+    scanf("%63s", password);
+    getchar(); // Consumir o \n
+
+    gerar_hash_senha(password, password_hash);
+
+    strcpy(lista_usuarios[n_usuarios].username, username);
+    strcpy(lista_usuarios[n_usuarios].password_hash, password_hash);
+    n_usuarios++;
+    salvar_usuarios(); // Salva o novo usuário no arquivo
+    printf("Usuário '%s' criado com sucesso!\n", username);
+}
+
+// Realiza o processo de login
+int fazer_login(void) {
+    char username[MAX_USERNAME_LEN];
+    char password[MAX_PASSWORD_HASH_LEN];
+    char password_hash_digitada[MAX_PASSWORD_HASH_LEN];
+    int tentativas = 3;
+
+    printf("\n=====================================\n");
+    printf("        LOGIN DO SISTEMA\n");
+    printf("=====================================\n");
+
+    while (tentativas > 0) {
+        printf("Nome de usuário: ");
+        scanf("%49s", username);
+        getchar(); 
+
+        printf("Senha: ");
+        scanf("%63s", password);
+        getchar(); 
+
+        gerar_hash_senha(password, password_hash_digitada);
+
+        for (int i = 0; i < n_usuarios; i++) {
+            if (strcmp(lista_usuarios[i].username, username) == 0 &&
+                strcmp(lista_usuarios[i].password_hash, password_hash_digitada) == 0) {
+                printf("\nLogin bem-sucedido! Bem-vindo(a), %s!\n", username);
+                return i; 
+            }
+        }
+        tentativas--;
+        printf("Nome de usuário ou senha incorretos. Tentativas restantes: %d\n", tentativas);
+    }
+    printf("\nNúmero máximo de tentativas excedido. Encerrando o sistema.\n");
+    return -1; 
+}
+
 
 /*======================== PRINCIPAL ========================*/
 int main(void) {
     int opcao;
+    
+    carregar_usuarios(); 
+
+    if(n_usuarios == 0) {
+        printf("\nNenhum usuário cadastrado! Você precisa criar um usuário antes de prosseguir.\n");
+        criar_usuario();
+        if(n_usuarios == 0) { 
+            printf("Não foi possível criar o usuário. Encerrando o sistema.\n");
+            return 1;
+        }
+    }
+
+    usuario_atual_idx = fazer_login();
+
+    if(usuario_atual_idx == -1) {
+        return 1; 
+    }
+    
     do {
         exibir_menu();
         opcao = ler_opcao();
@@ -885,7 +1034,7 @@ int main(void) {
                 menu_relatorios();
                 break;
             case 0:
-                printf("\nEncerrando o sistema. Até logo!\n");
+                printf("\nEncerrando o sistema. Até logo, %s!\n", lista_usuarios[usuario_atual_idx].username);
                 break;
             default:
                 printf("\nOpção inválida! Tente novamente.\n");
