@@ -5,6 +5,7 @@ organizar, visualizar e analisar receitas e despesas
 Autores:    Isabella Rodrigues Mendonça - 202501289
             Júlia Oliveira Almeida - 202402810
             Ana Vitória Silva da Luz Nascimento - 202006547
+            Gabriel Sales Mendes da Silva - 202500848
             Thais Lima Rodrigues da Cunha - 202500849
 */
 
@@ -15,7 +16,7 @@ Autores:    Isabella Rodrigues Mendonça - 202501289
 #define MAX_LANCAMENTOS 1000  // limite de lançamentos
 #define MAX_ORCAMENTOS (MAX_CATS * 12) // MAX_ORCAMENTOS deve ser > número de categorias × meses previstos
 
-/* Protótipos das funções */
+/* Blocos das funções */
 void exibir_menu(void); //ok
 int ler_opcao(void); //ok
 void gerenciar_categorias(void); //ok
@@ -25,17 +26,17 @@ void editar_gasto(void); //ok
 void editar_receita(void); //ok
 void remover_gasto(void); //ok
 void remover_receita(void); //ok
-/* Protótipos de categoria de gastos */
+/* categoria de gastos */
 void submenu_categorias_gastos(void); //OK
 void adicionar_categoria_gasto(void); //OK
 void listar_categorias_gasto(void); //OK
 void remover_categoria_gasto(void); //OK
-/* Protótipos de categoria de receita */
+/* categoria de receita */
 void submenu_categorias_receita(void); //OK
 void adicionar_categoria_receita(void); //OK
 void listar_categorias_receita(void); //OK
 void remover_categoria_receita(void); //OK
-/* Protótipos de relatórios */
+/* relatórios */
 void menu_relatorios(void); //ok
 void relatorio_despesas(void); //ok 
 void relatorio_receita(void); //ok
